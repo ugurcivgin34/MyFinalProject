@@ -7,18 +7,33 @@ namespace ConsoleUI
 {
     class Program
     {
+        //Data Transformation Object
         //SOLID
         //Open Closed Principle =>Yaptığın yazılıma yeni bir özellike ekliyorsan ,mevcuttaki hiçbir koduna dokunamazsın kuralıdır .
         static void Main(string[] args)
         {
+            ProductTest();
+
+            //CategoryTest();
+        }
+
+        private static void CategoryTest()
+        {
+            CategoryManeger categoryManeger = new CategoryManeger(new EfCategoryDal());
+            foreach (var category in categoryManeger.GetAll())
+            {
+                Console.WriteLine(category.CategoryName);
+            }
+        }
+
+        private static void ProductTest()
+        {
             ProductManager productManager = new ProductManager(new EfProductDal());
 
-            foreach (var prooduct in productManager.GetByUnitPrice(40,100))
+            foreach (var prooduct in productManager.GetProductDetails())
             {
-                Console.WriteLine(prooduct.ProductName);
+                Console.WriteLine(prooduct.ProductName + "/" + prooduct.CategoryName);
             }
-
-            
         }
     }
 }
