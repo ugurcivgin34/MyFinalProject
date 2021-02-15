@@ -14,6 +14,7 @@ namespace Business.Concrete
     public class ProductManager : IProductService
     {
         //Bir iş sınıfı başka sınıfı new lemez
+        //constructor injection yaparak bağımlılığı çözdük
 
         IProductDal _productDal;
 
@@ -37,7 +38,7 @@ namespace Business.Concrete
         {
             //İş kodları
             //Yetkisi var mı
-            if (DateTime.Now.Hour==22)
+            if (DateTime.Now.Hour == 15)
             {
                 return new ErrorDataResult<List<Product>>(Messages.MaintenanceTime); //Bakım zamanı demek
             }
