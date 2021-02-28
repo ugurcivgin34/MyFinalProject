@@ -1,6 +1,8 @@
-﻿using Entities.Concrete;
+﻿using Core.Entities.Concrete;
+using Entities.Concrete;
 using System;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
 using System.Text;
 
 namespace Business.Constans
@@ -14,6 +16,13 @@ namespace Business.Constans
         public static string ProductCountOfCategoryError = "Bir kategoride en fazla 10 ürüm olabilir";
         public static string ProductNameAlreadyExists = "Bu isimde zaten başka bir ürün var";
         public static string CategoryLimitExceded = "Kategori limiti aşıldığı için yeni ürün eklenemiyor";
+        public static string AuthorizationDenied="Yetkiniz yok";
+        internal static string UserRegistered;
+        internal static User UserNotFound;
+        internal static User PasswordError;
+        internal static string SuccessfulLogin;
+        internal static string UserAlreadyExists;
+        internal static string AccessTokenCreated;
 
         //public ler pascal case yani büyük harfle başlar 
     }

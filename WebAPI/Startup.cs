@@ -1,15 +1,21 @@
 using Business.Abstract;
 using Business.Concrete;
+using Core.Utilities.IoC;
+using Core.Utilities.Security.Encryption;
+using Core.Utilities.Security.JWT;
 using DataAccess.Abstract;
 using DataAccess.Concrete.EntityFramework;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -32,11 +38,29 @@ namespace WebAPI
             //AOP Autofac bize AOP saðlýyor bu arada
             //Autofac,Ninject,CastleWindsor,StructreMap,LightInject,DryInject -->IoC Conteiner
             services.AddControllers();
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             //singleton bellekte bir tane productmaneger oluþturuyor.Ýçerde data tutmuyorsak o zman singleton kullanýrýz.
             //services.AddSingleton<IProductService,ProductManager>(); //Bana arka planda bir referans oluþtur demek .IProductService þeklinde baðýmlýlýk görürsen onun karþýlýðý ProductManager dir demek istedik burda,
             //services.AddSingleton<IProductDal, EfProductDal>();
             //Arka planda new lemesi gerekiyor tanýmlamasý için .BU yüzden bu iþlemleri yaptýk.ARka planda newleyip çözümlüyor böylece.Yani arka planda new Productmanager() vs gibi iþlem yapýyor
             //ve de constructor þeklinde Tanýmladýðýmýz için eriþemez baþka classlar.Bu yüzden web api de erðiþemediði için IOC ile eriþmeyi saðladýk
+            var tokenOptions = Configuration.GetSection("TokenOptions").Get<TokenOptions>();
+
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(options =>
+                {
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuer = true,
+                        ValidateAudience = true,
+                        ValidateLifetime = true,
+                        ValidIssuer = tokenOptions.Issuer,
+                        ValidAudience = tokenOptions.Audience,
+                        ValidateIssuerSigningKey = true,
+                        IssuerSigningKey = SecurityKeyHelper.CreateSecurityKey(tokenOptions.SecurityKey)
+                    };
+                });
+            ServiceTool.Create(services);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -50,6 +74,8 @@ namespace WebAPI
             app.UseHttpsRedirection();
 
             app.UseRouting();
+
+            app.UseAuthentication();
 
             app.UseAuthorization();
 
