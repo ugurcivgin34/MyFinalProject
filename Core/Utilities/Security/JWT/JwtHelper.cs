@@ -26,7 +26,7 @@ namespace Core.Utilities.Security.JWT
         public AccessToken CreateToken(User user, List<OperationClaim> operationClaims)
         {
             _accessTokenExpiration = DateTime.Now.AddMinutes(_tokenOptions.AccessTokenExpiration);
-            var securityKey = SecurityKeyHelper.CreateSecurityKey(_tokenOptions.SecurityKey);
+            var securityKey = SecurityKeyHelper.CreateSecurityKey(_tokenOptions.SecurityKey); 
             var signingCredentials = SigningCredentialsHelper.CreateSigningCredentials(securityKey);
             var jwt = CreateJwtSecurityToken(_tokenOptions, user, signingCredentials, operationClaims);
             var jwtSecurityTokenHandler = new JwtSecurityTokenHandler();
@@ -57,6 +57,8 @@ namespace Core.Utilities.Security.JWT
         private IEnumerable<Claim> SetClaims(User user, List<OperationClaim> operationClaims)
         {
             var claims = new List<Claim>();
+
+            //claims.Add(new Claim(JwtRegisteredClaimNames.Email, email);  NNormalde böyle yapabilirdik ama tek tek böyle yazmaktansa method yazdık onun için extansion yaptık
             claims.AddNameIdentifier(user.Id.ToString());
             claims.AddEmail(user.Email);
             claims.AddName($"{user.FirstName} {user.LastName}");

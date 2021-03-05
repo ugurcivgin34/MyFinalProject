@@ -2,6 +2,8 @@
 using Business.BusinessAspects.Autofac;
 using Business.Constans;
 using Business.ValidationRules.FluentValidation;
+using Core.Aspects.AutoFac.Caching;
+using Core.Aspects.AutoFac.Transaction;
 using Core.Aspects.AutoFac.Validation;
 using Core.CrossCuttingConcerns.Validation;
 using Core.Utilities.Business;
@@ -38,8 +40,10 @@ namespace Business.Concrete
 
         }
 
-        [SecuredOperation("product.add,admin")]
+        [SecuredOperation("product.add")]
         [ValidationAspect(typeof(ProductValidator))]
+        [CacheRemoveAspect("IProductService.Get")]
+
         public IResult Add(Product product)
         {
             //business
@@ -59,7 +63,7 @@ namespace Business.Concrete
         }
 
 
-
+        [CacheAspect]
         public IDataResult<List<Product>> GetAll()
         {
             //İş kodları
@@ -76,6 +80,8 @@ namespace Business.Concrete
             return new SuccessDataResult<List<Product>>(_productDal.GetAll(p => p.CategoryId == id));
         }
 
+        [CacheAspect]
+        //[PerformanceAspect(5)] //Bu sistemde bu method 5 dk geçerse beni uyar,sistemde yavaşlık olabili yyani
         public IDataResult<Product> GetById(int productId)
         {
             return new SuccessDataResult<Product>(_productDal.Get(p => p.ProductId == productId));
@@ -92,6 +98,7 @@ namespace Business.Concrete
         }
 
         [ValidationAspect(typeof(ProductValidator))]
+        [CacheRemoveAspect("IProductService.Get")]
         public IResult Update(Product product)
         {
             //Select count(*) from products where categoryId=...
@@ -127,7 +134,7 @@ namespace Business.Concrete
 
         private IResult CheckIfCategoryLimitExceded()
         {
-            
+
             var result = _categoryService.GetAll();
             if (result.Data.Count > 15)
             {
@@ -137,6 +144,16 @@ namespace Business.Concrete
 
         }
 
-
+        [TransactionScopeAspect]
+       public IResult AddTransactionalTest(Product product)
+        {
+            Add(product);
+            if (product.UnitPrice < 10)
+            {
+                throw new Exception("");
+            }
+            Add(product);
+            return null;
         }
+    }
 }

@@ -1,5 +1,7 @@
 using Business.Abstract;
 using Business.Concrete;
+using Core.DependencyResolvers;
+using Core.Extensions;
 using Core.Utilities.IoC;
 using Core.Utilities.Security.Encryption;
 using Core.Utilities.Security.JWT;
@@ -38,7 +40,7 @@ namespace WebAPI
             //AOP Autofac bize AOP saðlýyor bu arada
             //Autofac,Ninject,CastleWindsor,StructreMap,LightInject,DryInject -->IoC Conteiner
             services.AddControllers();
-            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            
             //singleton bellekte bir tane productmaneger oluþturuyor.Ýçerde data tutmuyorsak o zman singleton kullanýrýz.
             //services.AddSingleton<IProductService,ProductManager>(); //Bana arka planda bir referans oluþtur demek .IProductService þeklinde baðýmlýlýk görürsen onun karþýlýðý ProductManager dir demek istedik burda,
             //services.AddSingleton<IProductDal, EfProductDal>();
@@ -60,7 +62,9 @@ namespace WebAPI
                         IssuerSigningKey = SecurityKeyHelper.CreateSecurityKey(tokenOptions.SecurityKey)
                     };
                 });
-            ServiceTool.Create(services);
+            services.AddDependencyResolvers(new ICoreModule[] { 
+                new CoreModule()
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

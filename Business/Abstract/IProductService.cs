@@ -18,5 +18,12 @@ namespace Business.Abstract
         IResult Add(Product product);
         IResult Update(Product product);
 
+        //IResult AddTransactionalTest(Product product);
+
+        //Transcation yönetimi uygulamalarda tutartlılığı korumak için ypaılan bir yöntemdir.Örneğin benim hesabımda 100 lira var,Başka hesaba 10 lira aktarcaz
+        //Benim hesabım 10 lira düşcek şekilde update edilmesi lazoım, karşı tarafın da 10 lira aratacak şekilde artması gerekir.
+        //2 tane veri tarabnı işlemi var.Benim hesaptan güncelledi ama karşı tarafa azarken sistem hata verdi,paramı geri almak için işlem
+        //Geri alınması gerekir.Bu gibi konularda transaction kullanılır
+
     }
 }

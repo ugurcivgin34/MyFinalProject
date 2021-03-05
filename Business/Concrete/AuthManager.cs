@@ -30,7 +30,7 @@ namespace Business.Concrete
                 LastName = userForRegisterDto.LastName,
                 PasswordHash = passwordHash,
                 PasswordSalt = passwordSalt,
-                Status = true
+                Status = true //Direk kayıt olduğuna varsayarak true olarak belirledik
             };
             _userService.Add(user);
             return new SuccessDataResult<User>(user, Messages.UserRegistered);
