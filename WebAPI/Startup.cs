@@ -40,12 +40,14 @@ namespace WebAPI
             //AOP Autofac bize AOP saðlýyor bu arada
             //Autofac,Ninject,CastleWindsor,StructreMap,LightInject,DryInject -->IoC Conteiner
             services.AddControllers();
-            
+
             //singleton bellekte bir tane productmaneger oluþturuyor.Ýçerde data tutmuyorsak o zman singleton kullanýrýz.
             //services.AddSingleton<IProductService,ProductManager>(); //Bana arka planda bir referans oluþtur demek .IProductService þeklinde baðýmlýlýk görürsen onun karþýlýðý ProductManager dir demek istedik burda,
             //services.AddSingleton<IProductDal, EfProductDal>();
             //Arka planda new lemesi gerekiyor tanýmlamasý için .BU yüzden bu iþlemleri yaptýk.ARka planda newleyip çözümlüyor böylece.Yani arka planda new Productmanager() vs gibi iþlem yapýyor
             //ve de constructor þeklinde Tanýmladýðýmýz için eriþemez baþka classlar.Bu yüzden web api de erðiþemediði için IOC ile eriþmeyi saðladýk
+            services.AddCors();
+
             var tokenOptions = Configuration.GetSection("TokenOptions").Get<TokenOptions>();
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -62,7 +64,7 @@ namespace WebAPI
                         IssuerSigningKey = SecurityKeyHelper.CreateSecurityKey(tokenOptions.SecurityKey)
                     };
                 });
-            services.AddDependencyResolvers(new ICoreModule[] { 
+            services.AddDependencyResolvers(new ICoreModule[] {
                 new CoreModule()
             });
         }
@@ -74,6 +76,10 @@ namespace WebAPI
             {
                 app.UseDeveloperExceptionPage();
             }
+
+            app.UseCors(builder => builder.WithOrigins("http://localhost:4200").AllowAnyHeader());
+
+            app.ConfigureCustomExceptionMiddleware();
 
             app.UseHttpsRedirection();
 

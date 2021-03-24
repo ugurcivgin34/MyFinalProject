@@ -40,7 +40,7 @@ namespace Business.Concrete
 
         }
 
-        [SecuredOperation("product.add")]
+        //[SecuredOperation("product.add")]
         [ValidationAspect(typeof(ProductValidator))]
         [CacheRemoveAspect("IProductService.Get")]
 
@@ -68,10 +68,10 @@ namespace Business.Concrete
         {
             //İş kodları
             //Yetkisi var mı
-            if (DateTime.Now.Hour == 15)
-            {
-                return new ErrorDataResult<List<Product>>(Messages.MaintenanceTime); //Bakım zamanı demek
-            }
+            //if (DateTime.Now.Hour == 15)
+            //{
+            //    return new ErrorDataResult<List<Product>>(Messages.MaintenanceTime); //Bakım zamanı demek
+            //}
             return new SuccessDataResult<List<Product>>(_productDal.GetAll(), Messages.ProductsListed);
         }
 
